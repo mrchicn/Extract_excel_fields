@@ -38,7 +38,7 @@
 
 ##### 1.环境要求:
 
-系统必须有 ==python 3环境==，且安装 ==openpyxl 模块==与  ==requests 模块==
+系统必须有 `python 3环境`，且安装`openpyxl 模块`与  `requests 模块`
 
 如果有Py3环境执行以下操作,如果有已安装，请忽略
 
@@ -71,7 +71,7 @@ pip install requests
 
 #### 功能说明:
 
-- 获取Excel==每列列名==，并生成支持Hive/Mysql的建表语句，默认分隔符为逗号
+- 获取Excel`每列列名`，并生成支持Hive/Mysql的建表语句，默认分隔符为逗号
 
 - 格式:
 
