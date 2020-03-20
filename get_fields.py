@@ -16,9 +16,8 @@ import os
 import random
 from fanyi.request_youdao import get_request_youdao
 import warnings
-
 from pinyin.convert_char import Convert_to_char
-
+#  忽略 警告信息
 warnings.filterwarnings("ignore")
 
 
