@@ -17,17 +17,21 @@ import random
 from fanyi.request_youdao import get_request_youdao
 import warnings
 
+from pinyin.convert_char import Convert_to_char
+
 warnings.filterwarnings("ignore")
 
 
 class Operation_excel_file():
 
     def __init__(self, base_dir):
+        self.convert_type = None
         self.base_dir = base_dir + "\\"
-        self.table_name = input("*\n*\t\t\tPlease enter generated table  name :\n\n")
+        self.table_name = input(
+            "*\t\t\tPlease enter generated table  name" + "\t" * 4 + "  *\n*" + "\t" * 15 + "  *\n*  " + "* " * 5 + ":")
         self.file_path = ""
         self.sql_prefix = "DROP TABLE IF EXISTS `%s` ;\n CREATE TABLE `%s` ( " % (self.table_name, self.table_name)
-        self.hive_sql_postfix = ") COMMENT \"%s\" \nROW FORMAT DELIMITED FIELDS TERMINATED BY ','\n STORED AS TEXTFILE;" % self.table_name
+        self.hive_sql_postfix = ") COMMENT \"%s\" \nROW FORMAT DELIMITED FIELDS TERMINATED BY '\\t'\n STORED AS ORCFILE;" % self.table_name
         self.mysql_sql_postfix = ") COMMENT \"%s\"  ENGINE = InnoDB AUTO_INCREMENT = 351 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = Compact; " % self.table_name
 
         self.ddl_file_name = ""
@@ -54,7 +58,8 @@ class Operation_excel_file():
 
             # Getting all sheet name from work_book object
             work_sheet_name = work_book.sheetnames
-            print("All sheet %s " % work_sheet_name)
+
+            print("\n\n\n  \t\t\t\t---->>   All sheet %s \n\n" % work_sheet_name)
 
             # todo 迭代后添加用户选择操作，让用户选择使用哪个sheet
 
@@ -67,8 +72,8 @@ class Operation_excel_file():
                 if cell_value is not None and len(cell_value) > 0:
                     # If value not None of append to list
                     self.src_fields.append(cell_value)
-            print("Total of %s column" % len(self.src_fields))
-            print("Generate file name is : %s \n\n" % self.ddl_file_name)
+            print("\t\t\t\t---->>   Total of %s column\n\n" % len(self.src_fields))
+            print("\t\t\t\t---->>   File Name%s \n\n" % self.ddl_file_name)
 
             return self.src_fields
         else:
@@ -78,16 +83,34 @@ class Operation_excel_file():
     # Transfor column name by youdao
     def translate_column_name(self):
         chinese_char_list = self.get_excel_by_column_name()
+        chinese_char_list_count = chinese_char_list.copy()
         if chinese_char_list:
             for chinese in chinese_char_list:
+                chinese_char_list_count.remove(chinese)
                 # print(len(chinese))
                 # print(type(chinese))
-                print("transformation   %s   ing ...\n\n" % chinese)
-                time.sleep(random.randint(1, 5))
+                # print("transformation   %s   ing ...\n\n" % chinese)
+
                 if len(chinese) > 0 and chinese is not None:
-                    translate_result = get_request_youdao(chinese.strip()).start()
-                    translate_result = self.replace_str(translate_result)
-                    self.translate_result.append(translate_result)
+                    while True:
+                        if self.convert_type is None:
+                            self.convert_type = input(
+                                " Please select converted type: \n\n\n   \t\t\t n --->> English\n\n \t\t\t p --->>> Pinyin\n\n\n")
+                        else:
+                            break
+                    if str(self.convert_type.lower()) == "n":
+                        time.sleep(random.randint(1, 5))
+                        print("[ %d/%d ] ---->>    %s   Converting ...\n\n\n" % (
+                            (len(chinese_char_list) - len(chinese_char_list_count)),len(chinese_char_list), chinese))
+                        result_english = get_request_youdao(chinese.strip()).start()
+                        result_english = self.replace_str(result_english)
+                        self.translate_result.append(result_english)
+                    elif str(self.convert_type.lower()) == "p":
+                        result_chars = Convert_to_char(chinese.strip()).chars
+                        self.translate_result.append(result_chars)
+                else:
+                    print("The input is invalid , please confirm  input value \n sorry system exit !")
+                    exit(0)
             print("\n" * 5 + "* " * 10 + "Show hive style " + "* " * 10 + "\n" * 3)
             return self.translate_result
 
@@ -98,14 +121,13 @@ class Operation_excel_file():
             "").replace(
             "(",
             "").replace(
-            ")", "").replace("\"", "").replace("\\", "").replace("\'", "").replace("-", "_").lower().replace("the_",
+            ")", "").replace("\"", "").replace("\\", "").replace("\'", "").replace("-", "_").lower().replace("the",
                                                                                                              "").replace(
-            "_of", "").replace("for_", "").replace("in_", "").replace("on_", "").replace("at", "").replace("ings",
-                                                                                                           "").replace(
+            "of", "").replace("for", "").replace("in", "").replace("at", "").replace("ings",
+                                                                                     "").replace(
             "ing", "").replace("?", "_").replace("__", "_")
         # rinse_result=rinse_result.replace("","")
         return rinse_result
-
 
     # Generate file
     def generate_fields(self):
@@ -139,49 +161,59 @@ class Operation_excel_file():
                         " `%s`  VARCHAR(200)   COMMENT  '%s'" % (
                             self.translate_result[index], self.src_fields[index]))
 
-        #  生成hive与mysql的ddl
+            #  生成hive与mysql的ddl
 
-        # Add hive suffix
-        if self.hive_sql_postfix not in hive_fields_list:
-            hive_fields_list.append(self.hive_sql_postfix)
+            # Add hive suffix
+            if self.hive_sql_postfix not in hive_fields_list:
+                hive_fields_list.append(self.hive_sql_postfix)
 
-        # Add mysql suffix
-        if self.mysql_sql_postfix not in mysql_fields_list:
-            mysql_fields_list.append(self.mysql_sql_postfix)
+            # Add mysql suffix
+            if self.mysql_sql_postfix not in mysql_fields_list:
+                mysql_fields_list.append(self.mysql_sql_postfix)
 
-        # Delete exist file
-        if os.path.isfile(self.base_dir + self.ddl_file_name):
-            os.remove(self.base_dir + self.ddl_file_name)
+            # Delete exist file
+            if os.path.isfile(self.base_dir + self.ddl_file_name):
+                os.remove(self.base_dir + self.ddl_file_name)
 
-        # Start write hive header
-        with open(self.base_dir + self.ddl_file_name, "a+") as f:
-            f.writelines("-- " + "* " * 10 + " Hive  DDL" + "* " * 10 + "\n")
-        # Iterate generate hive DDL
-        for filelds in hive_fields_list:
-            print(filelds)
+            # Start write hive header
             with open(self.base_dir + self.ddl_file_name, "a+") as f:
-                f.writelines(filelds + "\n")
+                f.writelines("-- " + "* " * 15 + " Hive  DDL" + "* " * 15 + "\n")
+                f.writelines("-- " + "*" * 70 + "\n")
+                f.writelines("-- 功能：\t\t\t\t 创建 什么什么 表 ( %s )" % self.table_name + "\n")
+                f.writelines("-- 作者：\t\t\t\t 念迟 & https://www.mrchi.cn \n")
+                f.writelines("-- 时间：\t\t\t\t %s \n" % time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+                f.writelines("-- " + "*" * 70 + "\n")
+            # Iterate generate hive DDL
+            for filelds in hive_fields_list:
+                print(filelds)
+                with open(self.base_dir + self.ddl_file_name, "a+") as f:
+                    f.writelines(filelds + "\n")
 
-        # Start write mysql  header
-        with open(self.base_dir + self.ddl_file_name, "a+") as f:
-            f.writelines("\n\n-- " + "* " * 10 + " MySQL  DDL " + "* " * 10 + "\n")
-
-        # Iterate generate mysql ddl
-        for filelds in mysql_fields_list:
+            # Start write mysql  header
             with open(self.base_dir + self.ddl_file_name, "a+") as f:
-                f.writelines(filelds + "\n")
+                f.writelines("\n\n-- " + "* " * 15 + " MySQL  DDL " + "* " * 15 + "\n")
+                f.writelines("-- " + "*" * 70 + "\n")
+                f.writelines("-- 功能：\t\t\t\t 创建 什么什么 表 ( %s )" % self.table_name + "\n")
+                f.writelines("-- 作者：\t\t\t\t 念迟 & https://www.mrchi.cn \n")
+                f.writelines("-- 时间：\t\t\t\t %s \n" % time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+                f.writelines("-- " + "*" * 70 + "\n")
+
+            # Iterate generate mysql ddl
+            for filelds in mysql_fields_list:
+                with open(self.base_dir + self.ddl_file_name, "a+") as f:
+                    f.writelines(filelds + "\n")
         else:
             print("The transform content cannot be empty")
-        exit(0)
+            exit(0)
 
 
 if __name__ == '__main__':
     base_dir = os.path.split(os.path.realpath(__file__))[0]
-    print("* " * 40 + "\n*\n*")
+    print("* " * 32 + "\n* " + "\t" * 15 + "  *" + "\n*" + "\t" * 15 + "  *")
     # print("*\n*\n* \t\t\t By: 念迟 & https://www.mrchi.cn  \n*")
-    print("* \t\t\t默认生成 Hive DDL 与 Mysql DDL (v2.3)\n* \n* ")
-    print("* " * 40)
-    print("*\n* ")
+    print(
+        "* \t\t\t默认生成 Hive DDL 与 Mysql DDL (v2.3)" + "\t" * 3 + "  *" + "\n* " + "\t" * 15 + "  *" + "\n* " + "\t" * 15 + "  *")
+    print("* " * 32 + "\n* " + "\t" * 15 + "  *" + "\n*" + "\t" * 15 + "  *")
     oef = []
     oef = Operation_excel_file(base_dir=base_dir)
     oef.generate_fields()

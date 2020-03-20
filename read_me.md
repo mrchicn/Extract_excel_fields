@@ -22,6 +22,15 @@
 - ##### 版本 v2.3    time: 2020年3月19日11:23:41
   - 优化了DDL选项操作, 默认生成 hive 和 mysql ddl,不用进行手动选择
   - 优化了显示格式，在文本文件中也可以看清楚
+  
+  
+- ##### 版本 v3.1    time: 2020年3月21日00:11:54
+  - 添加了长字段的处理方式,字段汉字描述过长，DDL建表时会报错,引用一个新的模块 xpinyin 和 pypiyin size:(779kB)
+  - 我安装 pypinyin 总是超时,所幸我就安装 xpinyin 其实功能都差不多,自己把逻辑处理一下, xpinyin的 whl文件小(128kB)下载的快，吼吼
+  - 英文和中文的使用场景一般来说，简单的词组就可以用英文 `建议在两个词组内`,如果超过两个词组的建议选择拼音解释
+  - 使用拼音时,注意,为区分上下层关系,用下划线来作为分隔符
+  
+  
 
 #### 使用方法:
 
@@ -95,13 +104,13 @@ pip install requests
 
 ##### 项目文件说明：
 
-![](G:\ProgramFiles\SystemTools\markdownpad_ttrar\WordCach\Images\Extract_Excle_Fields\explain.png)
+![](https://gitee.com/mrchis/picture/raw/6bb8e438503d4024e8d1dcca2983a5e4abc4171a/explain.png)
 
 
 
 ##### Excel 文件说明：
 
-![](G:\ProgramFiles\SystemTools\markdownpad_ttrar\WordCach\Images\Extract_Excle_Fields\excle_file.png)
+![](https://gitee.com/mrchis/picture/raw/97281d5636dbec9e8b42c8dcde850709f6c9e7eb/excle_file.png)
 
 
 
@@ -111,7 +120,5 @@ fanyi文件夹是请求有道API的（request_youdao.py）
 
 具体的逻辑，在源码里面写的
 
-![](G:\ProgramFiles\SystemTools\markdownpad_ttrar\WordCach\Images\Extract_Excle_Fields\request_youdao.png)
-
-
+![](https://gitee.com/mrchis/picture/raw/4e74a2511f27344affb18ef7b0f7fcf229dce96e/request_youdao.png)
 
