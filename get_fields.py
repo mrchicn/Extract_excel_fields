@@ -211,7 +211,7 @@ if __name__ == '__main__':
     print("* " * 32 + "\n* " + "\t" * 15 + "  *" + "\n*" + "\t" * 15 + "  *")
     # print("*\n*\n* \t\t\t By: 念迟 & https://www.mrchi.cn  \n*")
     print(
-        "* \t\t\t默认生成 Hive DDL 与 Mysql DDL (v2.3)" + "\t" * 3 + "  *" + "\n* " + "\t" * 15 + "  *" + "\n* " + "\t" * 15 + "  *")
+        "* \t\t\t默认生成 Hive DDL 与 Mysql DDL (v3.1)" + "\t" * 3 + "  *" + "\n* " + "\t" * 15 + "  *" + "\n* " + "\t" * 15 + "  *")
     print("* " * 32 + "\n* " + "\t" * 15 + "  *" + "\n*" + "\t" * 15 + "  *")
     oef = []
     oef = Operation_excel_file(base_dir=base_dir)
