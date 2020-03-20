@@ -104,13 +104,13 @@ pip install requests
 
 ##### 项目文件说明：
 
-![](https://gitee.com/mrchis/picture/raw/6bb8e438503d4024e8d1dcca2983a5e4abc4171a/explain.png)
+![](G:\ProgramFiles\SystemTools\markdownpad_ttrar\WordCach\Images\Extract_Excle_Fields\explain.png)
 
 
 
 ##### Excel 文件说明：
 
-![](https://gitee.com/mrchis/picture/raw/97281d5636dbec9e8b42c8dcde850709f6c9e7eb/excle_file.png)
+![](G:\ProgramFiles\SystemTools\markdownpad_ttrar\WordCach\Images\Extract_Excle_Fields\excle_file.png)
 
 
 
@@ -120,5 +120,7 @@ fanyi文件夹是请求有道API的（request_youdao.py）
 
 具体的逻辑，在源码里面写的
 
-![](https://gitee.com/mrchis/picture/raw/4e74a2511f27344affb18ef7b0f7fcf229dce96e/request_youdao.png)
+![](G:\ProgramFiles\SystemTools\markdownpad_ttrar\WordCach\Images\Extract_Excle_Fields\request_youdao.png)
+
+
 
