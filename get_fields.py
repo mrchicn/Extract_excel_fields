@@ -17,6 +17,7 @@ import random
 from fanyi.request_youdao import get_request_youdao
 import warnings
 from pinyin.convert_char import Convert_to_char
+
 #  忽略 警告信息
 warnings.filterwarnings("ignore")
 
@@ -100,7 +101,7 @@ class Operation_excel_file():
                     if str(self.convert_type.lower()) == "n":
                         time.sleep(random.randint(1, 5))
                         print("[ %d/%d ] ---->>    %s   Converting ...\n\n\n" % (
-                            (len(chinese_char_list) - len(chinese_char_list_count)),len(chinese_char_list), chinese))
+                            (len(chinese_char_list) - len(chinese_char_list_count)), len(chinese_char_list), chinese))
                         result_english = get_request_youdao(chinese.strip()).start()
                         result_english = self.replace_str(result_english)
                         self.translate_result.append(result_english)
@@ -178,7 +179,7 @@ class Operation_excel_file():
             with open(self.base_dir + self.ddl_file_name, "a+") as f:
                 f.writelines("-- " + "* " * 15 + " Hive  DDL" + "* " * 15 + "\n")
                 f.writelines("-- " + "*" * 70 + "\n")
-                f.writelines("-- 功能：\t\t\t\t 创建 什么什么 表 ( %s )" % self.table_name + "\n")
+                f.writelines("-- 功能：\t\t\t\t 创建 %s 表 ( %s )" % (self.table_name, self.table_name )+ "\n")
                 f.writelines("-- 作者：\t\t\t\t 念迟 & https://www.mrchi.cn \n")
                 f.writelines("-- 时间：\t\t\t\t %s \n" % time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
                 f.writelines("-- " + "*" * 70 + "\n")
@@ -192,7 +193,7 @@ class Operation_excel_file():
             with open(self.base_dir + self.ddl_file_name, "a+") as f:
                 f.writelines("\n\n-- " + "* " * 15 + " MySQL  DDL " + "* " * 15 + "\n")
                 f.writelines("-- " + "*" * 70 + "\n")
-                f.writelines("-- 功能：\t\t\t\t 创建 什么什么 表 ( %s )" % self.table_name + "\n")
+                f.writelines("-- 功能：\t\t\t\t 创建 %s 表 ( %s )" % (self.table_name, self.table_name )+ "\n")
                 f.writelines("-- 作者：\t\t\t\t 念迟 & https://www.mrchi.cn \n")
                 f.writelines("-- 时间：\t\t\t\t %s \n" % time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
                 f.writelines("-- " + "*" * 70 + "\n")
